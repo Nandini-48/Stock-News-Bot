@@ -1,0 +1,5 @@
+yfinance
+requests
+flask
+flask-cors
+flask-socketio
