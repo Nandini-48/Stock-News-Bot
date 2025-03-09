@@ -1,7 +1,6 @@
-gunicorn
-eventlet
-flask
-flask-socketio
-flask-cors
 yfinance
 requests
+flask
+flask-cors
+flask-socketio
+eventlet
