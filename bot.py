@@ -24,14 +24,15 @@ def get_stock_price(ticker):
 
 def get_stock_news(ticker):
     try:
-        url = f"https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers={ticker}&apikey=YT6ZNN6907UWED2Z"
+        url = f"https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers={ticker}&apikey={ALPHA_VANTAGE_API_KEY}"
         
         print("🔍 Fetching news from Alpha Vantage API...")  # Debugging
         print(f"🔗 API URL: {url}")  
         
         response = requests.get(url)
         print(f"📡 API Response Status: {response.status_code}")  
-        
+        print(f"📢 Response Headers: {response.headers}")  # Debugging Step
+
         try:
             json_response = response.json()
             print(f"📜 API Response JSON: {json_response}")  
@@ -39,7 +40,7 @@ def get_stock_news(ticker):
             print(f"🚨 JSON Parsing Error: {e}")  
             return ["Error parsing news data."]
 
-        if response.status_code == 200 and "feed" in json_response:
+        if response.status_code == 200 and "feed" in json_response and json_response["feed"]:
             articles = []
             for article in json_response["feed"][:2]:  # Get top 2 news
                 title = article.get("title", "No Title")
@@ -54,8 +55,12 @@ def get_stock_news(ticker):
         print("⚠️ No news available from API.")
         return ["No recent news available."]
     
+    except requests.exceptions.RequestException as req_err:
+        print(f"🚨 Request Exception: {req_err}")
+        return ["Error fetching news."]
+
     except Exception as e:
-        print(f"🚨 Error fetching news: {e}")
+        print(f"🚨 General Error: {e}")
         return ["Error fetching news."]
 
 # Function to get market sentiment (Bullish / Bearish)
