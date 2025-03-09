@@ -9,7 +9,7 @@ app = Flask(__name__)
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")  # Eventlet async mode
 
-ALPHA_VANTAGE_API_KEY = "K2762G30LM1621M5"
+ALPHA_VANTAGE_API_KEY = "YT6ZNN6907UWED2Z"
 
 # Function to get stock price
 def get_stock_price(ticker):
