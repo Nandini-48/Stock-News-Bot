@@ -23,10 +23,21 @@ def get_stock_price(ticker):
 def get_stock_news(ticker):
     url = f"https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers={ticker}&apikey={ALPHA_VANTAGE_API_KEY}"
     response = requests.get(url)
+
+    print("API Response Code:", response.status_code)  # Debugging step
+    print("API Response JSON:", response.json())  # Debugging step
+
     if response.status_code == 200:
-        news_data = response.json().get("feed", [])
-        return [article["title"] for article in news_data[:2]]
-    return ["No recent news available."]
+        news_data = response.json()
+        
+        if "feed" in news_data:
+            articles = news_data["feed"]
+            return [article["title"] for article in articles[:2]]  # Top 2 articles
+        
+        return ["No recent news available."]
+    
+    return ["Error fetching news."]
+
 
 # Function to get market sentiment (Bullish / Bearish)
 def get_market_sentiment(ticker):
