@@ -21,22 +21,28 @@ def get_stock_price(ticker):
 
 # Function to get stock news
 def get_stock_news(ticker):
-    url = f"https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers={ticker}&apikey={ALPHA_VANTAGE_API_KEY}"
-    response = requests.get(url)
+    try:
+        url = f"https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers={ticker}&apikey={ALPHA_VANTAGE_API_KEY}"
+        print(f"🔍 Fetching news from API: {url}")  # Debug log
+        response = requests.get(url)
 
-    print("API Response Code:", response.status_code)  # Debugging step
-    print("API Response JSON:", response.json())  # Debugging step
-
-    if response.status_code == 200:
-        news_data = response.json()
+        print(f"📡 API Response Status: {response.status_code}")  # Debug log
+        print(f"📜 API Response JSON: {response.json()}")  # Debug log
         
-        if "feed" in news_data:
-            articles = news_data["feed"]
-            return [article["title"] for article in articles[:2]]  # Top 2 articles
+        if response.status_code == 200:
+            news_data = response.json()
+            if "feed" in news_data:
+                articles = [article["title"] for article in news_data["feed"][:2]]
+                print(f"📰 News Fetched: {articles}")  # Debug log
+                return articles
         
+        print("⚠️ No news available from API.")
         return ["No recent news available."]
     
-    return ["Error fetching news."]
+    except Exception as e:
+        print(f"🚨 Error fetching news: {e}")
+        return ["Error fetching news."]
+
 
 
 # Function to get market sentiment (Bullish / Bearish)
@@ -74,4 +80,5 @@ def send_stock_data(data):
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))  # Render assigns port dynamically
-    socketio.run(app, host="0.0.0.0", port=port, debug=True, allow_unsafe_werkzeug=True)
+    socketio.run(app, host="0.0.0.0", port=port, debug=False)
+
