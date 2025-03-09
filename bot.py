@@ -82,9 +82,16 @@ def index():
 @socketio.on("subscribe_stock")
 def send_stock_data(data):
     ticker = data.get("ticker", "TSLA").upper()
+    print(f"✅ Received stock subscription request: {ticker}")  # Debugging Step
+
     price = get_stock_price(ticker)
-    news = get_stock_news(ticker)
+    print(f"💰 Stock Price Fetched: {price}")  # Debugging Step
+
+    news = get_stock_news(ticker)  # 🛑 API Call
+    print(f"📰 News Received in Function: {news}")  # Debugging Step
+
     sentiment = get_market_sentiment(ticker)
+    print(f"📊 Market Sentiment Fetched: {sentiment}")  # Debugging Step
 
     if price:
         socketio.emit("stock_update", {"ticker": ticker, "price": price, "news": news, "sentiment": sentiment})
