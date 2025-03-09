@@ -73,30 +73,34 @@
     </div>
 
     <script>
-        var socket = io.connect('https://stock-news-botpython-bot-py.onrender.com', { transports: ["websocket", "polling"] });
+       var socket = io.connect('https://your-app-name.onrender.com', { transports: ["websocket", "polling"] });
 
+socket.on('connect', function () {
+    console.log("✅ WebSocket Connected Successfully!");
+    socket.emit("subscribe_stock", { ticker: "TSLA" });
+});
 
-        socket.on('stock_update', function(data) {
-            if (data.price) {
-                document.getElementById("stockData").innerText = "Stock Price: $" + data.price;
-            }
-            if (data.sentiment) {
-                let sentimentText = "Market Sentiment: " + data.sentiment;
-                let sentimentColor = data.sentiment === "Bullish" ? "bullish" : "bearish";
-                document.getElementById("sentiment").innerHTML = `<span class="${sentimentColor}">${sentimentText}</span>`;
-            }
-            if (data.news && data.news.length > 0) {
-                let newsHtml = data.news.map(news => `<div class='news-item'>${news}</div>`).join('');
-                document.getElementById("newsList").innerHTML = newsHtml;
-            } else {
-                document.getElementById("newsList").innerHTML = "No news available.";
-            }
-        });
+socket.on('stock_update', function (data) {
+    console.log("📡 Data Received from Server:", data);  // Debugging Step
 
-        function subscribeStock() {
-            let ticker = document.getElementById("ticker").value;
-            socket.emit('subscribe_stock', { ticker: ticker });
-        }
+    if (data.price) {
+        document.getElementById("stockData").innerText = "Stock Price: $" + data.price;
+    }
+    if (data.sentiment) {
+        let sentimentText = "Market Sentiment: " + data.sentiment;
+        let sentimentColor = data.sentiment === "Bullish" ? "bullish" : "bearish";
+        document.getElementById("sentiment").innerHTML = `<span class="${sentimentColor}">${sentimentText}</span>`;
+    }
+    if (data.news && data.news.length > 0) {
+        console.log("📰 News Received:", data.news);  // Debugging Step
+        let newsHtml = data.news.map(news => `<div class='news-item'>${news}</div>`).join('');
+        document.getElementById("newsList").innerHTML = newsHtml;
+    } else {
+        console.log("⚠️ No news received.");
+        document.getElementById("newsList").innerHTML = "No recent news available.";
+    }
+});
+
     </script>
 </body>
 </html>
