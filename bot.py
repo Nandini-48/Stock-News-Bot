@@ -3,6 +3,7 @@ import requests
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_socketio import SocketIO
+import os
 
 app = Flask(__name__)
 CORS(app)  
@@ -56,4 +57,6 @@ def send_stock_data(data):
         socketio.emit("stock_update", {"error": "Invalid stock ticker or data not found"})
 
 if __name__ == "__main__":
-    socketio.run(app, debug=True)
+    port = int(os.environ.get("PORT", 5000))  # Use Render's assigned port or default to 5000
+    socketio.run(app, host="0.0.0.0", port=port, debug=True)
+
