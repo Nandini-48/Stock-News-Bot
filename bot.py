@@ -13,7 +13,7 @@ app = Flask(__name__)
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
-ALPHA_VANTAGE_API_KEY = "YT6ZNN6907UWED2Z"
+ALPHA_VANTAGE_API_KEY = "DXZM4IYJHLF9487F"
 
 # ✅ Function to get stock price
 def get_stock_price(ticker):
@@ -22,6 +22,25 @@ def get_stock_price(ticker):
     if not data.empty:
         return round(data["Close"].iloc[-1], 2)
     return None
+
+def get_market_sentiment(ticker):
+    try:
+        url = f"https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers={ticker}&apikey={ALPHA_VANTAGE_API_KEY}"
+        response = requests.get(url)
+        news = response.json()
+
+        positive, negative = 0, 0
+        for article in news.get("feed", []):
+            if "bullish" in article.get("title", "").lower():
+                positive += 1
+            elif "bearish" in article.get("title", "").lower():
+                negative += 1
+        
+        return "Bullish" if positive > negative else "Bearish"
+    
+    except Exception as e:
+        return "Neutral"
+
 
 # ✅ Function to get stock news
 def get_stock_news(ticker):
