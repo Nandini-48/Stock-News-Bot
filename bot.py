@@ -79,6 +79,7 @@ def send_stock_data(data):
         socketio.emit("stock_update", {"error": "Invalid stock ticker or data not found"})
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Render assigns port dynamically
-    socketio.run(app, host="0.0.0.0", port=port, debug=False)
+    port = int(os.environ.get("PORT", 10000))  # Render dynamically assigns a port
+    socketio.run(app, host="0.0.0.0", port=port, debug=True, allow_unsafe_werkzeug=True)
+
 
