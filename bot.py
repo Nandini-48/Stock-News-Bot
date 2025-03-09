@@ -20,27 +20,34 @@ def get_stock_price(ticker):
     return None
 
 # Function to get stock news
-# Function to get stock news
+
 def get_stock_news(ticker):
     try:
-        url = f"https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers={ticker}&apikey={ALPHA_VANTAGE_API_KEY}"
+        url = f"https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers={ticker}&apikey=YT6ZNN6907UWED2Z"
         
-        print("🔍 Attempting to fetch news...")  # Check if function is called
-        print(f"🔗 API URL: {url}")  # Verify API URL
+        print("🔍 Fetching news from Alpha Vantage API...")  # Debugging
+        print(f"🔗 API URL: {url}")  
         
         response = requests.get(url)
-        
-        print(f"📡 API Response Status: {response.status_code}")  # Check response status
+        print(f"📡 API Response Status: {response.status_code}")  
         
         try:
             json_response = response.json()
-            print(f"📜 API Response JSON: {json_response}")  # Print API JSON response
+            print(f"📜 API Response JSON: {json_response}")  
         except Exception as e:
-            print(f"🚨 JSON Parsing Error: {e}")  # Check if JSON fails
+            print(f"🚨 JSON Parsing Error: {e}")  
+            return ["Error parsing news data."]
 
         if response.status_code == 200 and "feed" in json_response:
-            articles = [article["title"] for article in json_response["feed"][:2]]
-            print(f"📰 News Fetched: {articles}")  # Print fetched news
+            articles = []
+            for article in json_response["feed"][:2]:  # Get top 2 news
+                title = article.get("title", "No Title")
+                link = article.get("url", "#")
+                sentiment = article.get("overall_sentiment_label", "Neutral")
+                news_entry = f"📰 {title} ({sentiment}) 🔗 {link}"
+                articles.append(news_entry)
+
+            print(f"📰 News Fetched: {articles}")  
             return articles
 
         print("⚠️ No news available from API.")
@@ -49,8 +56,6 @@ def get_stock_news(ticker):
     except Exception as e:
         print(f"🚨 Error fetching news: {e}")
         return ["Error fetching news."]
-
-
 
 # Function to get market sentiment (Bullish / Bearish)
 def get_market_sentiment(ticker):
