@@ -73,7 +73,8 @@
     </div>
 
     <script>
-        var socket = io.connect('https://stock-news-bot.onrender.com');
+        var socket = io.connect('https://stock-news-botpython-bot-py.onrender.com', { transports: ["websocket", "polling"] });
+
 
         socket.on('stock_update', function(data) {
             if (data.price) {
