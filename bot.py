@@ -1,13 +1,13 @@
+import os
 import yfinance as yf
 import requests
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_socketio import SocketIO
-import os
 
 app = Flask(__name__)
-CORS(app)  
-socketio = SocketIO(app, cors_allowed_origins="*")  
+CORS(app)
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")  # Eventlet async mode
 
 ALPHA_VANTAGE_API_KEY = "K2762G30LM1621M5"
 
@@ -25,7 +25,7 @@ def get_stock_news(ticker):
     response = requests.get(url)
     if response.status_code == 200:
         news_data = response.json().get("feed", [])
-        return [article["title"] for article in news_data[:2]]  
+        return [article["title"] for article in news_data[:2]]
     return ["No recent news available."]
 
 # Function to get market sentiment (Bullish / Bearish)
@@ -43,13 +43,18 @@ def get_market_sentiment(ticker):
         return "Bullish" if positive > negative else "Bearish"
     return "Neutral"
 
+# Add a test route to check if server is running
+@app.route('/')
+def index():
+    return "Server is running!"
+
 # Socket event for stock updates
 @socketio.on("subscribe_stock")
 def send_stock_data(data):
     ticker = data.get("ticker", "TSLA").upper()
     price = get_stock_price(ticker)
     news = get_stock_news(ticker)
-    sentiment = get_market_sentiment(ticker)  # Add sentiment check
+    sentiment = get_market_sentiment(ticker)
 
     if price:
         socketio.emit("stock_update", {"ticker": ticker, "price": price, "news": news, "sentiment": sentiment})
@@ -57,6 +62,5 @@ def send_stock_data(data):
         socketio.emit("stock_update", {"error": "Invalid stock ticker or data not found"})
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Use Render's assigned port or default to 5000
-    socketio.run(app, host="0.0.0.0", port=port, debug=True)
-
+    port = int(os.environ.get("PORT", 5000))  # Render assigns port dynamically
+    socketio.run(app, host="0.0.0.0", port=port, debug=True, allow_unsafe_werkzeug=True)
