@@ -74,12 +74,12 @@
 
     <script>
        var socket = io.connect('https://stock-news-botpython-bot-py.onrender.com', { transports: ["websocket", "polling"] });
-       
-       function subscribeStock() {
-            let ticker = document.getElementById("stockInput").value.toUpperCase();
-            console.log(`🔍 Subscribing to stock: ${ticker}`);
-            socket.emit("subscribe_stock", { ticker: ticker });
-        }
+    function subscribeStock() {
+    let ticker = document.getElementById("ticker").value.toUpperCase(); // ✅ Fix: Correct ID used
+    console.log(`🔍 Subscribing to stock: ${ticker}`);
+    socket.emit("subscribe_stock", { ticker: ticker });
+}
+
 
 socket.on('connect', function () {
     console.log("✅ WebSocket Connected Successfully!");
