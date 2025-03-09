@@ -68,12 +68,18 @@
     <div id="stockData">Stock Price: -</div>
     <div id="sentiment">Market Sentiment: -</div>
     <div id="newsContainer">
-        <h2>📰 Latest News</h2>
-        <div id="newsList">No news available.</div>
+        <h2>🗞️📰 Latest News</h2>
+        <div id="newsList">Search latst news for your ticker</div>
     </div>
 
     <script>
        var socket = io.connect('https://stock-news-botpython-bot-py.onrender.com', { transports: ["websocket", "polling"] });
+       
+       function subscribeStock() {
+            let ticker = document.getElementById("stockInput").value.toUpperCase();
+            console.log(`🔍 Subscribing to stock: ${ticker}`);
+            socket.emit("subscribe_stock", { ticker: ticker });
+        }
 
 socket.on('connect', function () {
     console.log("✅ WebSocket Connected Successfully!");
