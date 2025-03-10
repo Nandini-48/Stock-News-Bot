@@ -154,6 +154,11 @@
                 document.getElementById("newsList").innerHTML = "No recent news available.";
             }
         });
+        setInterval(() => {
+        socket.emit("ping", { msg: "keepalive" });
+        }, 25000); // Every 25 seconds
+
+
     </script>
 
 </body>
