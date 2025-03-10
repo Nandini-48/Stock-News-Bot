@@ -44,35 +44,16 @@ def get_market_sentiment(ticker):
 
 # ✅ Function to get stock news
 def get_stock_news(ticker):
-    try:
-        url = f"https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers={ticker}&apikey={ALPHA_VANTAGE_API_KEY}"
-        logging.debug(f"🔍 Fetching news from API: {url}")  # ✅ Logging Debug
+    api_key = "8acd8ce888e44c4dbe2af98c2a72f5a6"
+    url = f"https://newsapi.org/v2/everything?q={ticker}&apiKey={api_key}"
 
-        response = requests.get(url)
-        logging.debug(f"📡 API Response Status: {response.status_code}")  
+    response = requests.get(url)
+    data = response.json()
 
-        try:
-            json_response = response.json()
-            logging.debug(f"📜 API Response JSON: {json_response}")  
-        except Exception as e:
-            logging.error(f"🚨 JSON Parsing Error: {e}")  
-            return ["Error parsing news data."]
-
-        if response.status_code == 200 and "feed" in json_response and json_response["feed"]:
-            articles = [article["title"] for article in json_response["feed"][:2]]
-            logging.info(f"📰 News Fetched: {articles}")  
-            return articles
-
-        logging.warning("⚠️ No news available from API.")
-        return ["No recent news available."]
-    
-    except requests.exceptions.RequestException as req_err:
-        logging.error(f"🚨 Request Exception: {req_err}")
-        return ["Error fetching news."]
-    except Exception as e:
-        logging.error(f"🚨 General Error: {e}")
-        return ["Error fetching news."]
-
+    if "articles" in data:
+        articles = [f"📰 {a['title']} 🔗 {a['url']}" for a in data["articles"][:3]]
+        return articles
+    return ["No recent news available."]
 # ✅ Socket event for stock updates
 @socketio.on("subscribe_stock")
 def send_stock_data(data):
