@@ -51,7 +51,7 @@ def get_stock_news(ticker):
     data = response.json()
 
     if "articles" in data:
-        articles = [f"📰 {a['title']} 🔗 {a['url']}" for a in data["articles"][:3]]
+        articles = [f"📰 {a['title']} 🔗 {a['url']}" for a in data["articles"][:2]]
         return articles
     return ["No recent news available."]
 # ✅ Socket event for stock updates
